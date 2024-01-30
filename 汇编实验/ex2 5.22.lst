@@ -1,0 +1,89 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/22/23 10:47:28
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 0E E7 42 EF 4E DF		   ARRY DB 14,-25,66,-17,78,-33,46,-96,71,80  
+       2E A0 47 50
+ 000A 00			   ODDNUM DB 0
+ 000B 00			   EVENNUM DB 0
+ 000C = 000C			   LENG EQU $ -ARRY
+ 000C				   DATAS ENDS
+ 0000				STACKS SEGMENT
+ 0000  0040 [			   DW 40H DUP(0)
+        0000
+       ]
+ 0080				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    
+ 0005  32 C0			  XOR AL,AL
+ 0007  32 D2			  XOR DL,DL
+				;统计计数器清0
+ 0009  8D 1E 0000 R			LEA BX, ARRY
+				;BX指向ARRY首地址
+ 000D  B9 000C				MOV CX, LENG
+				;初始化循环计数器
+ 0010  E3 15				JCXZ L1
+				;若计数值为0，则退出循环
+ 0012				L2:
+ 0012  80 27 01				AND BYTE PTR [BX],1
+ 0015  80 3F 01				CMP BYTE PTR [BX],1
+ 0018  73 02				JAE L3
+ 001A  EB 05				JMP L4
+ 001C				L3:
+ 001C  FE C0				INC AL
+ 001E  43				INC BX
+ 001F  EB 04				JMP L5
+				;若末位等于1，则奇数计数加1
+ 0021				L4:
+ 0021  FE C2				INC DL
+ 0023  43				INC BX
+				;末位为0则偶数计数加1，BX指向ARRY数组中下一字节
+ 0024  49				DEC CX
+ 0025  E2 EB			L5:	LOOP L2
+				;（CX）减1后不为0，则转移至循环入口
+ 0027				L1:
+ 0027  A2 000A R			MOV ODDNUM,AL
+ 002A  88 16 000B R			MOV EVENNUM,DL
+				;保存统计结果
+ 002E  B4 4C			    MOV AH,4CH
+ 0030  CD 21			    INT 21H
+ 0032				CODES ENDS
+				    END START
+Microsoft (R) Macro Assembler Version 6.11		    05/22/23 10:47:28
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0032	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000C	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0080	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+ARRY . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+EVENNUM  . . . . . . . . . . . .	Byte	 000B	  DATAS	
+L1 . . . . . . . . . . . . . . .	L Near	 0027	  CODES	
+L2 . . . . . . . . . . . . . . .	L Near	 0012	  CODES	
+L3 . . . . . . . . . . . . . . .	L Near	 001C	  CODES	
+L4 . . . . . . . . . . . . . . .	L Near	 0021	  CODES	
+L5 . . . . . . . . . . . . . . .	L Near	 0025	  CODES	
+LENG . . . . . . . . . . . . . .	Number	 000Ch	 
+ODDNUM . . . . . . . . . . . . .	Byte	 000A	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

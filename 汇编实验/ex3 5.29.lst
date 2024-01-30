@@ -1,0 +1,178 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/29/23 10:48:18
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+				    ;此处输入数据段代码  
+ 0000 0B			    MAXLENTH DB 11
+ 0001 00			    STRLEN DB ?
+ 0002  000B [			    STR1 DB 11 DUP(0)
+        00
+       ]
+ 000D  000B [			    STR2 DB 11 DUP(0)
+        00
+       ]
+ 0018				    DATAS ENDS
+
+ 0000				STACKS SEGMENT
+				    ;此处输入堆栈段代码
+ 0000  0040 [			    DW 40H DUP(0)
+        0000
+       ]
+ 0080				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX,DATAS
+ 0003  8E D8			    MOV DS,AX
+				    ;此处输入代码段代码
+ 0005  B4 0A			    MOV AH,0AH
+ 0007  8D 16 0000 R		    LEA DX,MAXLENTH
+ 000B  CD 21			    INT 21H
+ 000D  33 C9			    XOR CX,CX
+ 000F  8D 36 0002 R		    LEA SI,STR1
+ 0013  8D 3E 000D R		    LEA DI,STR2
+				    ;分别将str1，str2存入SI,DI
+ 0017  E8 0031			    CALL NONUM
+ 001A  80 3E 0001 R 00		    CMP STRLEN,0
+				    ;判断删除数字之后的字符串长度
+ 001F  74 05			    JE L1
+ 0021  E8 0052			    CALL UPWORD
+ 0024  EB 09			    JMP L2
+					;如果长度不为0则调用upword来转换大写
+				    
+ 0026  B0 3F			L1: MOV AL,'?'
+ 0028  88 05				MOV [DI],AL
+ 002A  B0 24				MOV AL,'$'
+ 002C  88 45 01				MOV [DI+1],AL
+					;如果长度为0则在空串中压入‘？’
+						
+					;L2的作用是输出字符串
+ 002F  B2 0D			L2: MOV DL,0DH
+ 0031  B4 02				MOV AH,02H
+ 0033  CD 21				INT 21H
+ 0035  B2 0A				MOV DL,0AH
+ 0037  B4 02				MOV AH,02H
+ 0039  CD 21				INT 21H
+					;输出时注意需要输出换行与回车
+ 003B  B4 09				MOV AH,09H
+ 003D  8D 16 000D R			LEA DX,STR2
+ 0041  CD 21				INT 21H
+ 0043  B4 4C				MOV AH,4CH
+ 0045  CD 21				INT 21H
+				    
+ 0047  B4 4C			    MOV AH,4CH
+ 0049  CD 21			    INT 21H
+				    
+ 004B				NONUM PROC
+ 004B  9C				PUSHF
+ 004C  50				PUSH AX
+ 004D  57				PUSH DI
+ 004E  56				PUSH SI
+ 004F  51				PUSH CX
+					;入栈保护现场
+ 0050  8A 0E 0001 R			MOV CL,STRLEN
+ 0054  8A 1C			L3:	MOV BL,[SI]
+					;取当前字符保存至BL
+ 0056  80 FB 30				CMP BL,30H
+ 0059  73 02				JAE L4
+ 005B  EB 0B				JMP L5
+ 005D  80 FB 39			L4:	CMP BL,39H
+ 0060  77 06				JA L5
+ 0062  FE 0E 0001 R			DEC STRLEN
+ 0066  EB 05				JMP L6
+					;判断当前字符是否为数字（30H-39H）	
+ 0068  8A 04			L5: MOV AL,[SI]
+ 006A  88 05				MOV [DI],AL
+ 006C  47				INC DI
+					;如果不是数字就保存到str2,即（DI）
+ 006D  46			L6: INC SI
+ 006E  E2 E4				LOOP L3
+ 0070  59				POP CX
+ 0071  5E				POP SI
+ 0072  5F				POP DI
+ 0073  58				POP AX
+ 0074  9D				POPF
+					;出栈还原现场 
+ 0075  C3				RET
+ 0076				NONUM ENDP
+
+ 0076				UPWORD PROC
+ 0076  9C				PUSHF
+ 0077  50				PUSH AX
+ 0078  57				PUSH DI
+ 0079  51				PUSH CX
+					;入栈保护现场
+ 007A  8A 0E 0001 R			MOV CL,STRLEN
+ 007E  8A 1D			L7:	MOV BL,[DI]
+ 0080  80 FB 61				CMP BL,61H
+ 0083  73 02				JAE L8
+ 0085  EB 0A				JMP L9
+ 0087  8A 05			L8: MOV AL,[DI]
+ 0089  3C 7A				CMP AL,7AH
+					;判断当前字符是否为小写字母字符
+ 008B  77 04				JA L9
+					;如果不是小写字母（大于7AH）则跳过
+ 008D  2C 20				SUB AL,20H
+ 008F  88 05				MOV [DI],AL
+					;如果是小写字母就改为大写（原ascll码减20）然后存入原来位置
+ 0091  47			L9:	INC DI
+ 0092  E2 EA				LOOP L7
+ 0094  B0 24				MOV AL,'$'
+ 0096  88 05				MOV [DI],AL
+					;处理过后将$压入字符串中
+ 0098  59				POP CX
+ 0099  5F				POP DI
+ 009A  58				POP AX
+ 009B  9D				POPF
+					;出栈还原现场
+ 009C  C3				RET
+ 009D				UPWORD ENDP
+				    
+ 009D				CODES ENDS
+				    END START
+Microsoft (R) Macro Assembler Version 6.11		    05/29/23 10:48:18
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 009D	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 0018	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0080	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+NONUM  . . . . . . . . . . . . .	P Near	 004B	  CODES	Length= 002B Public
+  L3 . . . . . . . . . . . . . .	L Near	 0054	  CODES	
+  L4 . . . . . . . . . . . . . .	L Near	 005D	  CODES	
+  L5 . . . . . . . . . . . . . .	L Near	 0068	  CODES	
+  L6 . . . . . . . . . . . . . .	L Near	 006D	  CODES	
+UPWORD . . . . . . . . . . . . .	P Near	 0076	  CODES	Length= 0027 Public
+  L7 . . . . . . . . . . . . . .	L Near	 007E	  CODES	
+  L8 . . . . . . . . . . . . . .	L Near	 0087	  CODES	
+  L9 . . . . . . . . . . . . . .	L Near	 0091	  CODES	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+L1 . . . . . . . . . . . . . . .	L Near	 0026	  CODES	
+L2 . . . . . . . . . . . . . . .	L Near	 002F	  CODES	
+MAXLENTH . . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+STR1 . . . . . . . . . . . . . .	Byte	 0002	  DATAS	
+STR2 . . . . . . . . . . . . . .	Byte	 000D	  DATAS	
+STRLEN . . . . . . . . . . . . .	Byte	 0001	  DATAS	
+
+	   0 Warnings
+	   0 Errors
