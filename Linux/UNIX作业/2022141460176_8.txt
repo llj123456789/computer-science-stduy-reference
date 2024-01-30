@@ -1,0 +1,2 @@
+sed -n -e '/\([A|a]rgument\)/=' week8.txt
+sed -n -e '/\([A|a]rgument\)/=' -e '/\([A|a]rgument\)/p' week8.txt | sed -e 'N;s/\n/:/'

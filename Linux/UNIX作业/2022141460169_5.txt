@@ -1,0 +1,5 @@
+head -5 week5_11.txt
+tail -5 week5_12.txt
+ls -ai
+cp  week5_14.log week5_14_dest
+mv week5_15.log wek5_15.txt

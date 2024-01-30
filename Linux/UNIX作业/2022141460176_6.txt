@@ -1,0 +1,6 @@
+ vi +$'e week6_1.txt' +$':2' +$'i\n[line22222222]' +$':5' +$'d' +x
+chmodu+x,g-w,o=r week6_2.dat
+
+
+
+

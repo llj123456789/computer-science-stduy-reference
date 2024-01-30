@@ -1,0 +1,5 @@
+cd week5_6
+pwd
+cd ..
+pwd
+cat week5_10_1.txt week5_10_2.txt week5_10_3.txt

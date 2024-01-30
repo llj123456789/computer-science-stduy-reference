@@ -1,0 +1,5 @@
+grep -i -c 'linux' week7.txt
+grep -c '^$' week7.txt
+grep -n -v ' ' week7.txt | grep -v ':$'
+grep -o '^[0-9]*$'  week7.txt|sort -g -r
+grep -E -n '^One|^The|^You' week7.txt | sort -g -r

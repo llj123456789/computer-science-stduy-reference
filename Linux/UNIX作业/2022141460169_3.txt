@@ -1,0 +1,5 @@
+who -b
+uname -v
+date +%Y"|"%m"|"%d_%H:%M
+cal 10 1949
+cat week5_5.txt

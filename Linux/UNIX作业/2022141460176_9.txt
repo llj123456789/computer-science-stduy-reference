@@ -1,0 +1,2 @@
+awk 'BEGIN{sum=0;i=0} {if($4=="sales"){sum=sum+$5;i++}} END{print(sum/i)}' employee.txt
+awk '$2=="varun" {print}' employee.txt
