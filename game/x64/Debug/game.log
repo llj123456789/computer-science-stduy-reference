@@ -1,0 +1,4 @@
+﻿  game_main.cpp
+C:\Users\20415\Desktop\vs_c\game\game_main.cpp(68,15): warning C4244: “参数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+C:\Users\20415\Desktop\vs_c\game\game_main.cpp(167,118): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
+  game.vcxproj -> C:\Users\20415\Desktop\vs_c\game\x64\Debug\game.exe
