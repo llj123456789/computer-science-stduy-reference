@@ -1,0 +1,1 @@
+Pyinstaller -F --distpath build main.py
